@@ -2,7 +2,6 @@ package handler
 
 import (
 	"cerca-scraper/internal/constants"
-	"cerca-scraper/internal/queue"
 	"cerca-scraper/internal/scraper"
 	"encoding/json"
 	"fmt"
@@ -11,13 +10,11 @@ import (
 )
 
 type Handler struct {
-	rabbitMQ *queue.RabbitMQConfig
+	// Add other dependencies here if needed in the future
 }
 
-func NewHandler(rabbitMQ *queue.RabbitMQConfig) *Handler {
-	return &Handler{
-		rabbitMQ: rabbitMQ,
-	}
+func NewHandler() *Handler {
+	return &Handler{}
 }
 
 func (h *Handler) HandleSingleStation(w http.ResponseWriter, r *http.Request) {
@@ -40,9 +37,11 @@ func (h *Handler) HandleSingleStation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.rabbitMQ.PublishSchedule(data); err != nil {
-		log.Printf("Error publishing to queue: %v", err)
-	}
+	// Removed RabbitMQ publishing - data is now only returned in HTTP response
+	// If you need to process this data elsewhere, you can:
+	// - Save to database
+	// - Call another service directly
+	// - Process inline here
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(data); err != nil {
