@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"cerca-scraper/internal/constants"
 	"cerca-scraper/internal/scraper"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -26,10 +28,16 @@ func HandleSingleTrain(w http.ResponseWriter, r *http.Request) {
 	trainName := r.PathValue("trainName")
 	stationName := r.PathValue("stationNameSlug")
 
-	data, err := scraper.ScrapeStation(stationName)
+	stationSlug, exists := constants.Stations[stationName]
 
+	if !exists {
+		http.Error(w, "Station not found", http.StatusNotFound)
+		return
+	}
+
+	data, err := scraper.ScrapeStation(stationSlug)
 	if err != nil {
-		http.Error(w, "Error al obtener los datos", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error scraping station: %v", err), http.StatusInternalServerError)
 		return
 	}
 
