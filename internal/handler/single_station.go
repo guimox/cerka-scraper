@@ -9,15 +9,7 @@ import (
 	"net/http"
 )
 
-type Handler struct {
-	// Add other dependencies here if needed in the future
-}
-
-func NewHandler() *Handler {
-	return &Handler{}
-}
-
-func (h *Handler) HandleSingleStation(w http.ResponseWriter, r *http.Request) {
+func HandleSingleStation(w http.ResponseWriter, r *http.Request) {
 	stationName := r.PathValue("stationNameSlug")
 
 	if r.Method != http.MethodGet {
@@ -36,12 +28,6 @@ func (h *Handler) HandleSingleStation(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Error scraping station: %v", err), http.StatusInternalServerError)
 		return
 	}
-
-	// Removed RabbitMQ publishing - data is now only returned in HTTP response
-	// If you need to process this data elsewhere, you can:
-	// - Save to database
-	// - Call another service directly
-	// - Process inline here
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(data); err != nil {

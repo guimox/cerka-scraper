@@ -16,9 +16,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	h := handler.NewHandler()
-
-	mux.HandleFunc("GET /schedule/{stationNameSlug}", h.HandleSingleStation)
+	mux.HandleFunc("GET /schedule/{stationNameSlug}", handler.HandleSingleStation)
+	mux.HandleFunc("GET /schedule/{stationNameSlug}/{trainName}", handler.HandleSingleTrain)
 	mux.HandleFunc("GET /stations", handler.HandleAllStations)
 
 	server := &http.Server{
